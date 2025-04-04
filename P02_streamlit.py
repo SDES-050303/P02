@@ -9,12 +9,14 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.util import ngrams
 
-nltk.download('punkt')
-nltk.download('stopwords')
+# Asegurar que NLTK use la carpeta local si se sube a Streamlit Cloud
+nltk.data.path.append('./nltk_data')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
 
 # --- Configuración Inicial ---
 st.set_page_config(page_title="Análisis de Letras de Canciones", layout="wide")
-DATA_DIR = "Data songs"  # Carpeta principal donde están "80's", "Rock", etc.
+DATA_DIR = "Data songs"  # Carpeta donde están las subcarpetas "80's", "Rock", etc.
 
 # --- Funciones auxiliares ---
 def cargar_archivos(carpeta):
