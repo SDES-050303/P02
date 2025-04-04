@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 import nltk
 from nltk.corpus import stopwords
 from nltk.util import ngrams
+from nltk.tokenize import RegexpTokenizer
 
-# Asegurar que NLTK use la carpeta local si se sube a Streamlit Cloud
+# --- Preparar NLTK ---
 nltk.data.path.append('./nltk_data')
-nltk.download('punkt', quiet=True)
 nltk.download('stopwords', quiet=True)
 
 # --- Configuración Inicial ---
 st.set_page_config(page_title="Análisis de Letras de Canciones", layout="wide")
-DATA_DIR = "Data songs"  # Carpeta donde están las subcarpetas "80's", "Rock", etc.
+DATA_DIR = "Data songs"
 
 # --- Funciones auxiliares ---
 def cargar_archivos(carpeta):
@@ -29,10 +29,12 @@ def cargar_archivos(carpeta):
 idioma = st.selectbox("Selecciona el idioma del análisis", ["español", "inglés"])
 stop_words = set(stopwords.words('spanish' if idioma == "español" else 'english'))
 
+# Usar tokenizer simple sin punkt
+tokenizer = RegexpTokenizer(r'\w+')
+
 def limpiar_texto(texto):
     texto = texto.lower()
-    texto = re.sub(r'[^\w\s]', '', texto)
-    tokens = nltk.word_tokenize(texto)
+    tokens = tokenizer.tokenize(texto)
     tokens = [word for word in tokens if word not in stop_words]
     return tokens
 
@@ -74,7 +76,8 @@ if canciones_seleccionadas:
 
         # --- Métricas ---
         total_palabras = len(tokens)
-        promedio = total_palabras / max(1, len(nltk.sent_tokenize(texto)))
+        num_oraciones = texto.count('.') + texto.count('!') + texto.count('?')
+        promedio = total_palabras / max(1, num_oraciones)
         palabras_unicas = set(tokens)
         frec = Counter(tokens)
 
